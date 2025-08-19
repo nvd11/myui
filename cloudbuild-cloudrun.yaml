@@ -11,8 +11,8 @@ steps:
     args:
       - '-c' 
       - |  
-      - 'pwd'
-      - 'ls -l'     
+        pwd
+        ls -l   
 
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
 options: # https://cloud.google.com/cloud-build/docs/build-config#options
