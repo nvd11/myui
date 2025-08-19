@@ -9,9 +9,9 @@ steps:
     name: ubuntu
     entrypoint: bash
     args:
-      - "-c" 
+      - '-c' 
       - |  
-      - "pwd" 
+      - 'pwd'
       - 'ls -l'     
 
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
