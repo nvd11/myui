@@ -1,0 +1,20 @@
+
+steps:
+  - id: check npm version   
+    name: node:22-alpine
+    entrypoint: npm
+    args: --version
+    
+
+
+
+logsBucket: gs://jason-hsbc_cloudbuild/logs/
+options: # https://cloud.google.com/cloud-build/docs/build-config#options
+  logging: GCS_ONLY # or CLOUD_LOGGING_ONLY https://cloud.google.com/cloud-build/docs/build-config#logging
+
+
+
+substitutions:
+  _DOCKER_REPO_NAME: my-docker-repo
+  _APP_NAME: myui
+  _GAR_BASE: europe-west2-docker.pkg.dev
