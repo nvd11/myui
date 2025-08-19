@@ -14,6 +14,18 @@ steps:
         pwd
         ls -l   
 
+  - id: install js packages
+    name: node:22-alpine
+    entrypoint: npm
+    args: ["install"]
+
+  - id: build js
+    name: node:22-alpine
+    entrypoint: npm
+    args: ["run", "build"]
+
+
+
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
 options: # https://cloud.google.com/cloud-build/docs/build-config#options
   logging: GCS_ONLY # or CLOUD_LOGGING_ONLY https://cloud.google.com/cloud-build/docs/build-config#logging
