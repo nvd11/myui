@@ -3,7 +3,7 @@ steps:
   - id: check npm version   
     name: node:22-alpine
     entrypoint: npm
-    args: --version
+    args: ["--version"]
 
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
 options: # https://cloud.google.com/cloud-build/docs/build-config#options
