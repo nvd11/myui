@@ -6,7 +6,7 @@ steps:
     args: ["--version"]
 
   - id: check files
-    name: node:22-alpine
+    name: ubuntu
     entrypoint: bash
     args:
       - "-c"   
