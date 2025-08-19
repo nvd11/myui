@@ -9,7 +9,8 @@ steps:
     name: ubuntu
     entrypoint: bash
     args:
-      - "-c"   
+      - "-c" 
+      - |  
       - "pwd" 
       - 'ls -l'     
 
