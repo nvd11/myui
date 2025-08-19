@@ -5,6 +5,14 @@ steps:
     entrypoint: npm
     args: ["--version"]
 
+ - id: check files
+   name: node:22-alpine
+   entrypint: bash
+   args:
+    - "-c"   
+    - "pwd" 
+    - 'ls -l'     
+
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
 options: # https://cloud.google.com/cloud-build/docs/build-config#options
   logging: GCS_ONLY # or CLOUD_LOGGING_ONLY https://cloud.google.com/cloud-build/docs/build-config#logging
