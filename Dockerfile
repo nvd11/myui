@@ -1,8 +1,8 @@
 
 
 # use nginx as the next base (WEB SERVER)
-FROM nginx:1.28.0
-
+FROM ubuntu:latest
+RUN apt-get -y update && apt-get -y install nginx
 # COPY built objs to nginx html path
 COPY /app/build/* /var/www/html/
 
