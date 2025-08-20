@@ -4,7 +4,7 @@
 FROM ubuntu:latest
 RUN apt-get -y update && apt-get -y install nginx
 # COPY built objs to nginx html path
-COPY /app/build/* /var/www/html/
+COPY ./build/* /var/www/html/
 
 EXPOSE 80
 
