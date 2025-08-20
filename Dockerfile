@@ -1,7 +1,7 @@
 
 
 # use nginx as the next base (WEB SERVER)
-FROM nginx:alpine
+FROM nginx:1.28.0
 
 # COPY built objs to nginx html path
 COPY /app/build/* /var/www/html/
