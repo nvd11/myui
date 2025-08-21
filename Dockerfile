@@ -1,9 +1,9 @@
 
 
 # use nginx as the next base (WEB SERVER)
-FROM nginx:alpine
+FROM ubuntu:latest
 
-# RUN apt-get -y update && apt-get -y install nginx
+RUN apt-get -y update && apt-get -y install nginx
 # COPY built objs to nginx html path
 RUN rm -rf /etc/nginx/sites-enabled/default
 RUN mkdir -p /var/www/html/myui
