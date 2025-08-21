@@ -1,10 +1,12 @@
 
 
 # use nginx as the next base (WEB SERVER)
-FROM ubuntu:latest
+FROM nginx:alpine
+
 RUN apt-get -y update && apt-get -y install nginx
 # COPY built objs to nginx html path
-COPY ./build/* /var/www/html/
+RUN rm -rf /usr/share/nginx/html/*
+ COPY ./build/* /usr/share/nginx/html
 
 EXPOSE 80
 
