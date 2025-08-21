@@ -9,7 +9,7 @@ RUN rm -rf /etc/nginx/sites-enabled/default
 RUN mkdir -p /var/www/html/myui
 COPY ./build/* /var/www/html/myui
 
-COPY nginx_conef/myui.conf /etc/nginx/conf.d/myui.conf
+COPY nginx_conf/myui.conf /etc/nginx/conf.d/myui.conf
 
 
 EXPOSE 80
