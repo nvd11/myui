@@ -24,6 +24,20 @@ steps:
     entrypoint: npm
     args: ["run", "build"]
 
+  - id: build docker imageq
+    name: gcr.io/cloud-builders/docker
+    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}', '.']                                              
+
+  - id: push docker image to GAR
+    name: gcr.io/cloud-builders/docker
+    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}' ]
+
+
+
+
+
+
+
 
 
 logsBucket: gs://jason-hsbc_cloudbuild/logs/
@@ -34,3 +48,5 @@ substitutions:
   _DOCKER_REPO_NAME: my-docker-repo
   _APP_NAME: myui
   _GAR_BASE: europe-west2-docker.pkg.dev
+  _PORT: "8082"
+  _VM_HOST: "tf-vpc0-subnet0-vm0"
