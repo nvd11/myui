@@ -75,6 +75,6 @@ substitutions:
   _APP_NAME: myui
   _APP_TAG: latest
   _GAR_BASE: europe-west2-docker.pkg.dev
-  _PORT: "8082"
+  _PORT: "8083"
   _VM_HOST: "tf-vpc0-subnet0-vm0"
 
