@@ -26,11 +26,11 @@ steps:
 
   - id: build docker imageq
     name: gcr.io/cloud-builders/docker
-    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}', '.']                                              
+    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/${_DOCKER_REPO_NAME}/${_APP_NAME}', '.']                                              
 
   - id: push docker image to GAR
     name: gcr.io/cloud-builders/docker
-    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}' ]
+    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/${_DOCKER_REPO_NAME}/${_APP_NAME}' ]
 
 
   - id: deploy image to GCE
