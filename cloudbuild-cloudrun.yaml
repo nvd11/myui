@@ -26,14 +26,33 @@ steps:
 
   - id: build docker imageq
     name: gcr.io/cloud-builders/docker
-    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}', '.']                                              
+    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}', '.']                                              
 
   - id: push docker image to GAR
     name: gcr.io/cloud-builders/docker
-    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}' ]
+    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/${_APP_NAME}/${_APP_NAME}' ]
 
 
-
+  - id: deploy image to GCE
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        whoami
+        gcloud auth list
+        set -x
+        mkdir -p /root/.ssh
+        gcloud secrets versions access latest --secret=gateman-private-ssh-key > /root/.ssh/id_rsa
+        gcloud secrets versions access latest --secret=gateman-public-ssh-key > /root/.ssh/id_rsa.pub
+        chmod 600 /root/.ssh/id_rsa
+        chmod 600 /root/.ssh/id_rsa.pub
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "whoami" 
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker container prune -f; sudo docker ps -a"  
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker stop ${_APP_NAME} && sudo docker rm ${_APP_NAME}" 
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker pull europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker run -d -p ${_PORT}:8080 -e APP_ENVIRONMENT=${_APP_ENV} --name ${_APP_NAME} europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
+        echo ok
 
 
 
@@ -47,6 +66,7 @@ options: # https://cloud.google.com/cloud-build/docs/build-config#options
 substitutions:
   _DOCKER_REPO_NAME: my-docker-repo
   _APP_NAME: myui
+  _APP_TAG: latest
   _GAR_BASE: europe-west2-docker.pkg.dev
   _PORT: "8082"
   _VM_HOST: "tf-vpc0-subnet0-vm0"
