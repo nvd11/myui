@@ -58,7 +58,7 @@ steps:
         gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker container prune -f; sudo docker ps -a"  
         gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker stop ${_APP_NAME} && sudo docker rm ${_APP_NAME}" 
         gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker pull europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
-        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker run -d -p ${_PORT}:8080 -e APP_ENVIRONMENT=${_APP_ENV} --name ${_APP_NAME} europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker run -d -p ${_PORT}:${_APP_PORT} -e APP_ENVIRONMENT=${_APP_ENV} --name ${_APP_NAME} europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
         echo ok
 
 
@@ -76,5 +76,6 @@ substitutions:
   _APP_TAG: latest
   _GAR_BASE: europe-west2-docker.pkg.dev
   _PORT: "8083"
+  _APP_PORT:"80"
   _VM_HOST: "tf-vpc0-subnet0-vm0"
 
