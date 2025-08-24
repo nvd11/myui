@@ -76,6 +76,6 @@ substitutions:
   _APP_TAG: latest
   _GAR_BASE: europe-west2-docker.pkg.dev
   _PORT: "8083"
-  _APP_PORT:"80"
+  _APP_PORT: "80"
   _VM_HOST: "tf-vpc0-subnet0-vm0"
 
