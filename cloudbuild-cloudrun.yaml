@@ -33,8 +33,12 @@ steps:
     args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/${_DOCKER_REPO_NAME}/${_APP_NAME}' ]
 
   - id: check and start target server
-    name: gcr.io/cloud-builders/gcloud    
-    args: ['compute', 'instances', 'describe', 'tf-vpc0-subnet0-vm0', '--zone=europe-west2-c', '--format=value(status)', '|', 'grep', '-q', 'RUNNING', '||', 'gcloud', 'compute', 'instances', 'start', 'tf-vpc0-subnet0-vm0', '--zone=europe-west2-c']
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        gcloud compute instances describe tf-vpc0-subnet0-vm0 --zone=europe-west2-c --format='value(status)' | grep -q 'RUNNING' || gcloud compute instances start tf-vpc0-subnet0-vm0 --zone=europe-west2-c
 
   - id: deploy image to GCE
     name: 'gcr.io/cloud-builders/gcloud'
@@ -73,3 +77,4 @@ substitutions:
   _GAR_BASE: europe-west2-docker.pkg.dev
   _PORT: "8082"
   _VM_HOST: "tf-vpc0-subnet0-vm0"
+
