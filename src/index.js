@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {vDom2} from './js/vdom2.js';
 import {vdom3} from './js/vdom3.js';
+import variable_rendering from './js/variable_rendering.js'
 
 
 
@@ -45,3 +46,4 @@ console.log("hello")
                                                                                                                                                                                                                                   
 vDom2();
 vdom3();
+variable_rendering()
