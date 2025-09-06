@@ -1,0 +1,81 @@
+
+steps:
+  - id: check npm version   
+    name: node:22-alpine
+    entrypoint: npm
+    args: ["--version"]
+
+  - id: check files
+    name: ubuntu
+    entrypoint: bash
+    args:
+      - '-c' 
+      - |  
+        pwd
+        ls -l   
+
+  - id: install js packages
+    name: node:22-alpine
+    entrypoint: npm
+    args: ["install"]
+
+  - id: build js
+    name: node:22-alpine
+    entrypoint: npm
+    args: ["run", "build"]
+
+  - id: build docker imageq
+    name: gcr.io/cloud-builders/docker
+    args: ['build','-t','europe-west2-docker.pkg.dev/$PROJECT_ID/${_DOCKER_REPO_NAME}/${_APP_NAME}', '.']                                              
+
+  - id: push docker image to GAR
+    name: gcr.io/cloud-builders/docker
+    args: [ 'push', 'europe-west2-docker.pkg.dev/$PROJECT_ID/${_DOCKER_REPO_NAME}/${_APP_NAME}' ]
+
+  - id: check and start target server
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        gcloud compute instances describe tf-vpc0-subnet0-vm0 --zone=europe-west2-c --format='value(status)' | grep -q 'RUNNING' || gcloud compute instances start tf-vpc0-subnet0-vm0 --zone=europe-west2-c
+
+  - id: deploy image to GCE
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        whoami
+        gcloud auth list
+        set -x
+        mkdir -p /root/.ssh
+        gcloud secrets versions access latest --secret=gateman-private-ssh-key > /root/.ssh/id_rsa
+        gcloud secrets versions access latest --secret=gateman-public-ssh-key > /root/.ssh/id_rsa.pub
+        chmod 600 /root/.ssh/id_rsa
+        chmod 600 /root/.ssh/id_rsa.pub
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "whoami" 
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker container prune -f; sudo docker ps -a"  
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker stop ${_APP_NAME} && sudo docker rm ${_APP_NAME}" 
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker pull europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
+        gcloud compute ssh gateman@${_VM_HOST} --zone=europe-west2-c --quiet --ssh-key-file=/root/.ssh/id_rsa -- "sudo docker run -d -p ${_PORT}:${_APP_PORT} -e APP_ENVIRONMENT=${_APP_ENV} --name ${_APP_NAME} europe-west2-docker.pkg.dev/$PROJECT_ID/my-docker-repo/${_APP_NAME}:${_APP_TAG}"
+        echo ok
+
+
+
+
+
+
+logsBucket: gs://jason-hsbc_cloudbuild/logs/
+options: # https://cloud.google.com/cloud-build/docs/build-config#options
+  logging: GCS_ONLY # or CLOUD_LOGGING_ONLY https://cloud.google.com/cloud-build/docs/build-config#logging
+
+substitutions:
+  _DOCKER_REPO_NAME: my-docker-repo
+  _APP_NAME: myui
+  _APP_TAG: latest
+  _GAR_BASE: europe-west2-docker.pkg.dev
+  _PORT: "8083"
+  _APP_PORT: "80"
+  _VM_HOST: "tf-vpc0-subnet0-vm0"
+
